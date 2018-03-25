@@ -69,7 +69,7 @@ public class OutputFormatter {
         }
 
         if (data.length == 0) {
-            printNames(names,lenghts);
+            printNames(names, lenghts);
             return;
         }
 
@@ -88,16 +88,16 @@ public class OutputFormatter {
             } else {
                 for (int i = 0; i < data.length; i++) {
                     if (data[i][j] == null) continue;
-                    int tmpLenght=0;
+                    int tmpLenght = 0;
                     switch (types[j]) {
                         case "class java.lang.String":
                             tmpLenght = data[i][j].toString().length();
                             break;
                         case "class java.lang.Integer":
-                            tmpLenght = intdf.format(Double.parseDouble(data[i][j].toString())).length();
+                            tmpLenght = intdf.format(data[i][j]).length();
                             break;
                         case "class java.lang.Double":
-                            tmpLenght = df.format(Double.parseDouble(data[i][j].toString())).length();
+                            tmpLenght = df.format(data[i][j]).length();
                             break;
                     }
                     lenghts[j] = lenghts[j] > tmpLenght ? lenghts[j] : tmpLenght;
@@ -106,64 +106,54 @@ public class OutputFormatter {
         }
         //теперь в lenghts лежит ширина каждого столбца
 
-        printNames(names,lenghts);
+        printNames(names, lenghts);
 
         for (int i = 0; i < data.length; i++) {
             for (int j = 0; j < data[i].length; j++) {
                 out.print("|");
-                
-                switch (types[j]) {
-                    case "class java.util.Date":
-                        if (data[i][j] == null) {
+                if (data[i][j] == null) {
+                    switch (types[j]) {
+                        case "class java.util.Date":
+                        case "class java.lang.String":
                             out.print("-");
                             for (int k = 1; k < lenghts[j]; k++) {
                                 out.print(" ");
                             }
-                        } else {
+                            break;
+                        case "class java.lang.Integer":
+                        case "class java.lang.Double":
+                            for (int k = 1; k < lenghts[j]; k++) {
+                                out.print(" ");
+                            }
+                            out.print("-");
+                            break;
+                    }
+                } else {
+                    switch (types[j]) {
+                        case "class java.util.Date":
                             out.print(dateFormat.format(data[i][j]));
-                        }
-                        break;
-                    case "class java.lang.String":
-                        if (data[i][j] == null) {
-                            out.print("-");
-                            for (int k = 1; k < lenghts[j]; k++) {
-                                out.print(" ");
-                            }
-                        } else {
+                            break;
+                        case "class java.lang.String":
                             out.print(data[i][j].toString());
                             for (int k = data[i][j].toString().length(); k < lenghts[j]; k++) {
                                 out.print(" ");
                             }
-                        }
-                        break;
-                    case "class java.lang.Integer":
-                        if (data[i][j] == null) {
-                            for (int k = 1; k < lenghts[j]; k++) {
-                                out.print(" ");
-                            }
-                            out.print("-");
-                        } else {
-                            String resultString = intdf.format(Double.parseDouble(data[i][j].toString()));
+                            break;
+                        case "class java.lang.Integer":
+                            String resultString = intdf.format(data[i][j]);
                             for (int k = resultString.length(); k < lenghts[j]; k++) {
                                 out.print(" ");
                             }
                             out.print(resultString);
-                        }
-                        break;
-                    case "class java.lang.Double":
-                        if (data[i][j] == null) {
-                            for (int k = 1; k < lenghts[j]; k++) {
-                                out.print(" ");
-                            }
-                            out.print("-");
-                        } else {
-                            String resultString = df.format(Double.parseDouble(data[i][j].toString()));
+                            break;
+                        case "class java.lang.Double":
+                            resultString = df.format(data[i][j]);
                             for (int k = resultString.length(); k < lenghts[j]; k++) {
                                 out.print(" ");
                             }
                             out.print(resultString);
-                        }
-                        break;
+                            break;
+                    }
                 }
             }
             out.println("|");
