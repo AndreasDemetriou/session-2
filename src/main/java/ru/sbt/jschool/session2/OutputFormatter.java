@@ -33,6 +33,9 @@ public class OutputFormatter {
         this.out = out;
     }
 
+    DecimalFormat df = new DecimalFormat("###,##0.00");
+    DecimalFormat intdf = new DecimalFormat("###,##0");
+
     public void printSeparator(int z, int[] lenghts) {
         for (int i = 0; i < z; i++) {
             out.print("+");
@@ -59,29 +62,7 @@ public class OutputFormatter {
         printSeparator(names.length, lenghts);
     }
 
-    public void output(String[] names, Object[][] data) throws ParseException {
-        DecimalFormat df = new DecimalFormat("###,##0.00");
-        DecimalFormat intdf = new DecimalFormat("###,##0");
-        int[] lenghts = new int[names.length];
-        String[] types = new String[names.length];
-        for (int i = 0; i < names.length; i++) {
-            lenghts[i] = names[i].length();
-        }
-
-        if (data.length == 0) {
-            printNames(names, lenghts);
-            return;
-        }
-
-        for (int j = 0; j < data[0].length; j++) {
-            if (data[0][j] != null) types[j] = data[0][j].getClass().toString();
-            else {
-                int i = 1;
-                while (data[i][j] == null) i++;
-                types[j] = data[i][j].getClass().toString();
-            }
-        } //в types лежат типы столбцов
-
+    public int[] getLengths(int size, Object[][] data,  String[] types, int[] lenghts){
         for (int j = 0; j < data[0].length; j++) {
             if (types[j].equals("class java.util.Date")) {
                 lenghts[j] = lenghts[j] > 10 ? lenghts[j] : 10; //здесь проверяю отдельно, чтобы лишний раз не крутить цикл
@@ -104,10 +85,30 @@ public class OutputFormatter {
                 }
             }
         }
+        return lenghts;
+    }
+
+    public void output(String[] names, Object[][] data) throws ParseException {
+        int[] lenghts = new int[names.length];
+        String[] types = new String[names.length];
+        for (int i = 0; i < names.length; i++) {
+            lenghts[i] = names[i].length();
+        }
+        if (data.length == 0) {
+            printNames(names, lenghts);
+            return;
+        }
+        for (int j = 0; j < data[0].length; j++) {
+            if (data[0][j] != null) types[j] = data[0][j].getClass().toString();
+            else {
+                int i = 1;
+                while (data[i][j] == null) i++;
+                types[j] = data[i][j].getClass().toString();
+            }
+        } //в types лежат типы столбцов
+        lenghts = getLengths(names.length, data, types,lenghts);
         //теперь в lenghts лежит ширина каждого столбца
-
         printNames(names, lenghts);
-
         for (int i = 0; i < data.length; i++) {
             for (int j = 0; j < data[i].length; j++) {
                 out.print("|");
