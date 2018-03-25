@@ -79,7 +79,7 @@ public class OutputFormatter {
         } //в types лежат типы столбцов
 
         for (int j = 0; j < data[0].length; j++) {
-            if (data[0][j].getClass().toString().equals("class java.util.Date")) {
+            if (types[j].equals("class java.util.Date")) {
                 lenghts[j] = lenghts[j] > 10 ? lenghts[j] : 10;
             } else {
                 switch (types[j]) {
